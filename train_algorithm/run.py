@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.cross_validation import train_test_split
+###from sklearn.naive_bayes import GaussianNB
 from sklearn import neighbors
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
@@ -63,7 +64,13 @@ def runForest(X_train, X_test, Y_train, Y_test):
     forest = RandomForestClassifier(n_estimators=50, random_state=1)
     forest = forest.fit(X_train, Y_train)
     score = forest.score(X_test, Y_test)
-    return score
+    return forest, score
+
+###def runGaussianNB(X_train, X_test, Y_train, Y_test):
+###    clf=GaussianNB()
+###    clf.fit(X_train,Y_train)
+###    score=clf.score(X_test, Y_test)
+###    return clf, score
 
 def runKNN(X_train, X_test, Y_train, Y_test):
     knn = neighbors.KNeighborsClassifier()
@@ -94,11 +101,15 @@ X_train, X_test = transformByVectorizer(X_train, X_test, vectorizer)
 tfidf_transformer.fit(X_train)
 X_train, X_test = transformByTfIdf(X_train, X_test, tfidf_transformer)
 
-forest_score = runForest(X_train, X_test, Y_train, Y_test)
+forest, forest_score = runForest(X_train, X_test, Y_train, Y_test)
+###gnb, gnb_score=runGaussianNB(X_train, X_test, Y_train, Y_test)
 print 'Random Forest score: ', forest_score
-
+###print 'Random Gaussian Naive Bayes score: ', gnb_score
 with open('forest', 'wb') as f:
     cPickle.dump(forest, f)
+
+###with open('gnb', 'wb') as fi:
+###    cPickle.dump(gnb, fi)
 
 with open('vectorizer', 'wb') as file:
     cPickle.dump(vectorizer, file)
