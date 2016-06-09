@@ -9,16 +9,18 @@ Unfortunately, we can not provide you with the raw text dataset we've used to tr
 
 To run create your own lead qualifier, you'll need to run these scripts on your own customer data, which you can do using the FullContact API.
 
-## train_algorithm
+## [train_algorithm](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm)
 
-This script trains an algorithm on your input data. It expects two excel sheet named 'qualified' and 'disqualified' in the '/input' folder. These sheets need to contain two columns:
+This script trains an algorithm on your input data. It expects two excel sheet named *qualified* and *disqualified* in the [input](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm/input) folder. These sheets need to contain two columns:
 
 1) URL
-2) Company description
+2) Description
+
+![](https://raw.githubusercontent.com/xeneta/LeadQualifier/master/img/sheet.png)
 
 Run the script:
 
-`python run.py`
+    python run.py
 
 It'll dump three files to your disc:
 
@@ -28,12 +30,12 @@ It'll dump three files to your disc:
 
 Copy paste these into the 'qualify_leads/algorithms' folder, and it'll be ready to start predicting.
 
-## qualify_leads
+## [qualify_leads](https://github.com/xeneta/LeadQualifier/tree/master/qualify_leads)
 
 This is the script that actually predicts the quality of your leads. Add an excel sheet named 'data' in the '/input' folder. Use the same format as the example file that's already there.
 
 Run the script:
 
-`python run.py`
+    python run.py
 
 Got questions? Email me at per@xeneta.com.
