@@ -6,9 +6,9 @@ from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
 from sklearn.externals import joblib
 
-
 stemmer = SnowballStemmer('english')
 stopWords = set(stopwords.words('english'))
+
 def getSheet(name):
     sheets = xlrd.open_workbook(name)
     sheet = sheets.sheet_by_index(0)
@@ -37,7 +37,6 @@ def getUrlsFromSheet(sheet):
         urls.append(url)
     return urls
 
-
 def getDescriptionsFromSheet(sheet):
     descriptions = []
     for index in xrange(1, sheet.nrows):
@@ -61,12 +60,14 @@ def saveData(descriptions, urls, predictions):
         ws.write(index + 1, 2, predictions[index])
     wb.save('output/predictions.xls')
 
-sheet = getSheet('input/data.xlsx')
-descriptions = getDescriptionsFromSheet(sheet)
-urls = getUrlsFromSheet(sheet)
-clean_descriptions = cleanUp(descriptions)
-vectorized_descriptions = transform(clean_descriptions, vectorizer)
-transformed_descriptions = transform(vectorized_descriptions, tfidf_transformer)
-predictions = forest.predict(transformed_descriptions)
-saveData(descriptions, urls, predictions)
+def qualifyLeads():
+    sheet = getSheet('input/data.xlsx')
+    descriptions = getDescriptionsFromSheet(sheet)
+    urls = getUrlsFromSheet(sheet)
+    clean_descriptions = cleanUp(descriptions)
+    vectorized_descriptions = transform(clean_descriptions, vectorizer)
+    transformed_descriptions = transform(vectorized_descriptions, tfidf_transformer)
+    predictions = forest.predict(transformed_descriptions)
+    saveData(descriptions, urls, predictions)
 
+qualifyLeads()
