@@ -9,9 +9,20 @@ Unfortunately, we can not provide you with the raw text dataset we've used to tr
 
 To run create your own lead qualifier, you'll need to run these scripts on your own customer data, which you can do using the FullContact API.
 
+## Installation
+
+Start off by running the following command:
+
+    pip install -r requirements.txt
+
+You'll also need to download the stopword from the [nltk](http://www.nltk.org/index.html) package. Run the Python interpreter and type the following:
+
+    import nltk
+    nltk.download('stopwords')
+
 ## [train_algorithm](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm)
 
-This script trains an algorithm on your input data. It expects two excel sheets named *qualified* and *disqualified* in the [input](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm/input) folder. These sheets need to contain two columns:
+This script trains an algorithm on your input data. It expects two excel sheets named **qualified** and **disqualified** in the [input](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm/input) folder. These sheets need to contain two columns:
 
 - URL
 - Description
