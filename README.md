@@ -2,7 +2,7 @@
 
 This repo is a collection of scripts we use at Xeneta to qualify sales leads with machine learning. Read more about this project in the Medium article [Boosting Sales With Machine Learning](https://medium.com/xeneta/boosting-sales-with-machine-learning-fbcf2e618be3).
 
-Our simple scikit learn Random Forest algorithm obtain an accuracy of 86,4% on the testing data.
+Our simple scikit learn Random Forest algorithm obtain an accuracy of 86.4% on the testing data.
 
 Unfortunately, we can not provide you with the raw text dataset we've used to train our algorithm, as it contains sensitive company information (who our customers are). However, we have added our own vectorized & transformed data in the /data folder (which is the final input to the RF algorithm). Feel free to play around with this data and see if you can beat our accuracy.
 
