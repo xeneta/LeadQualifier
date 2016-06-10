@@ -16,6 +16,7 @@ def getSheet(name):
 
 vectorizer = joblib.load("algorithms/vectorizer")
 forest = joblib.load("algorithms/forest")
+###gnb=joblib.load("algorithms/gnb")
 tfidf_transformer = joblib.load("algorithms/tfidf_transformer")
 
 def cleanUp(descriptions):
@@ -68,6 +69,7 @@ def qualifyLeads():
     vectorized_descriptions = transform(clean_descriptions, vectorizer)
     transformed_descriptions = transform(vectorized_descriptions, tfidf_transformer)
     predictions = forest.predict(transformed_descriptions)
+    ###predictions = gnb.predict(transformed_descriptions)
     saveData(descriptions, urls, predictions)
 
 qualifyLeads()
