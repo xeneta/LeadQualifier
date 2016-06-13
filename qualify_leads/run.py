@@ -1,4 +1,5 @@
 import re
+import csv
 import xlrd
 import xlwt
 from nltk.stem.snowball import SnowballStemmer
@@ -8,17 +9,18 @@ from sklearn.externals import joblib
 stemmer = SnowballStemmer('english')
 stopWords = set(stopwords.words('english'))
 
-
+    
 def getSheet(name):
     sheets = xlrd.open_workbook(name)
     sheet = sheets.sheet_by_index(0)
     return sheet
 
-vectorizer = joblib.load("algorithms/vectorizer")
-forest = joblib.load("algorithms/forest")
-# gnb=joblib.load("algorithms/gnb")
-tfidf_transformer = joblib.load("algorithms/tfidf_transformer")
-
+def importAlgorithms():
+    vectorizer = joblib.load("algorithms/vectorizer")
+    tfidf_transformer = joblib.load("algorithms/tfidf_transformer")
+    clf = joblib.load("algorithms/forest")
+    # clf=joblib.load("algorithms/gnb")
+    return vectorizer, tfidf_transformer, clf
 
 def cleanUp(descriptions):
     clean_descriptions = []
@@ -34,14 +36,12 @@ def cleanUp(descriptions):
         clean_descriptions.append(" ".join(meaningful_desc))
     return clean_descriptions
 
-
 def getUrlsFromSheet(sheet):
     urls = []
     for index in xrange(1, sheet.nrows):
         url = sheet.cell_value(index, 0)
         urls.append(url)
     return urls
-
 
 def getDescriptionsFromSheet(sheet):
     descriptions = []
@@ -50,10 +50,8 @@ def getDescriptionsFromSheet(sheet):
         descriptions.append(description)
     return descriptions
 
-
 def transform(data, transformer):
     return transformer.transform(data).toarray()
-
 
 def saveData(descriptions, urls, predictions):
     wb = xlwt.Workbook()
@@ -68,7 +66,6 @@ def saveData(descriptions, urls, predictions):
         ws.write(index + 1, 2, predictions[index])
     wb.save('output/predictions.xls')
 
-
 def qualifyLeads():
     sheet = getSheet('input/data.xlsx')
     descriptions = getDescriptionsFromSheet(sheet)
@@ -82,4 +79,8 @@ def qualifyLeads():
     # predictions = gnb.predict(transformed_descriptions)
     saveData(descriptions, urls, predictions)
 
+
+
+vectorizer, tfidf_transformer, clf = importAlgorithms()
 qualifyLeads()
+

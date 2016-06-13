@@ -9,7 +9,7 @@ Unfortunately, we can not provide you with the raw text dataset we've used to tr
 
 To run create your own lead qualifier, you'll need to run these scripts on your own customer data, which you can do using the FullContact API.
 
-## Installation
+## Setup
 
 Start off by running the following command:
 
@@ -20,9 +20,9 @@ You'll also need to download the stopword from the [nltk](http://www.nltk.org/in
     import nltk
     nltk.download('stopwords')
 
-## [train_algorithm](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm)
+## [Train Algorithm](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm)
 
-This script trains an algorithm on your input data. It expects two excel sheets named **qualified** and **disqualified** in the [input](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm/input) folder. These sheets need to contain two columns:
+This script trains an algorithm on **your own** input data (not ours). It expects two excel sheets named **qualified** and **disqualified** in the [input](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm/input) folder. These sheets need to contain two columns:
 
 - URL
 - Description
@@ -34,17 +34,25 @@ Run the script:
 
     python run.py
 
-It'll dump three files to your disc:
+It'll dump three files into the [qualify_leads](https://github.com/xeneta/LeadQualifier/tree/master/qualify_leads) project:
 
 - algorithm
 - vectorizer
 - tfidf_vectorizer
 
-Copy paste these into the 'qualify_leads/algorithms' folder, and it'll be ready to start predicting.
+You're now ready to start classifying your sales leads!
 
-## [qualify_leads](https://github.com/xeneta/LeadQualifier/tree/master/qualify_leads)
+## [Qualify Leads](https://github.com/xeneta/LeadQualifier/tree/master/qualify_leads)
 
 This is the script that actually predicts the quality of your leads. Add an excel sheet named **data** in the [input](https://github.com/xeneta/LeadQualifier/tree/master/qualify_leads/input) folder. Use the same format as the example file that's already there.
+
+Run the script:
+
+    python run.py
+
+## [Beat Our Results](https://github.com/xeneta/LeadQualifier/tree/master/xeneta_qualifier)
+
+If you want to play around with the Xeneta dataset, we've provided you with our vectorized and transformed data together with a script where you can easily test your own algorithms.
 
 Run the script:
 
