@@ -1,6 +1,11 @@
 import csv
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import roc_auc_score, precision_recall_fscore_support
 import numpy as np
+
+def convertToFloat(lst):
+    return np.array(lst).astype(np.float)
 
 def fetchData(path):
     labels = []
@@ -8,19 +13,39 @@ def fetchData(path):
     f = open(path)
     csv_f = csv.reader(f)
     for row in csv_f:
-        labels.append(row[0])
-        data.append(row[1:])
+        labels.append(convertToFloat(row[0]))
+        data.append(convertToFloat(row[1:]))
     f.close()
     return np.array(data), np.array(labels)
 
-def runForest(X_train, X_test, Y_train, Y_test):
-    forest = RandomForestClassifier(n_estimators=90, random_state=1)
-    forest = forest.fit(X_train, Y_train)
+# Random Forest Classifier
+def runForest(X_train, y_train):
+    forest = RandomForestClassifier(n_estimators=90, random_state=42)
+    forest.fit(X_train, y_train)
     return forest
 
-X_test, Y_test = fetchData('data/test.csv')
-X_train, Y_train = fetchData('data/train.csv')
+# Stochastic Gradient Descent Classifier
+def runSGD(X_train, y_train):
+    sgd = SGDClassifier(n_iter=500, loss='modified_huber', penalty='elasticnet', random_state=42)
+    sgd.fit(X_train, y_train)
+    return sgd
+ 
+def getScores(clf, X, y):
+    predictions = clf.predict(X)
+    scores = precision_recall_fscore_support(y, predictions, average='binary')
+    return scores
 
-forest = runForest(X_train, X_test, Y_train, Y_test)
-score = forest.score(X_test, Y_test)
-print 'Random Forest score: ', score
+# Import data
+X_test, y_test = fetchData('data/test.csv')
+X_train, y_train = fetchData('data/train.csv')
+
+forest = runForest(X_train, y_train)
+forest_scores = getScores(forest, X_test, y_test)
+print 'Random Forest Scores: ', forest_scores
+
+sgd = runSGD(X_train, y_train)
+sgd_scores = getScores(sgd, X_test, y_test)
+print 'SGD Scores: ', sgd_scores
+
+
+

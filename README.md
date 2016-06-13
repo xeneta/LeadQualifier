@@ -50,12 +50,24 @@ Run the script:
 
     python run.py
 
-## [Beat Our Results](https://github.com/xeneta/LeadQualifier/tree/master/xeneta_qualifier)
+## [Xeneta Qualifier Playground](https://github.com/xeneta/LeadQualifier/tree/master/xeneta_qualifier)
 
 If you want to play around with the Xeneta dataset, we've provided you with our vectorized and transformed data together with a script where you can easily test your own algorithms.
+
+Thanks to [lampts](https://github.com/lampts) for implementing the best performing algorithm so far.
+
+### Leaderboard:
+
+| Algorithm     | Precision     | Recall | F1 Score|
+| ------------- |:--------------| :------|:--------|
+| SGD Classifier| 0.872         | 0.940  | 0.905   |
+| Random Forest | 0.845         | 0.915  | 0.878   |
+
 
 Run the script:
 
     python run.py
+
+Feel free to add new algorithms and send us a pull request, as we're interested in growing the leaderboard.
 
 Got questions? Email me at per@xeneta.com.
