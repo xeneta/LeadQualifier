@@ -55,7 +55,7 @@ def transform(data, transformer):
 def saveData(descriptions, urls, predictions):
     wb = xlwt.Workbook()
     ws = wb.add_sheet('Companies')
-    ws.write(0, 0, 'Name')
+    ws.write(0, 0, 'URL')
     ws.write(0, 1, 'Description')
     ws.write(0, 2, 'Prediction')
     length = len(descriptions)
