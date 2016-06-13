@@ -74,7 +74,7 @@ def qualifyLeads(vectorizer, tfidf_transformer, clf):
     transformed_descriptions = transform(
         vectorized_descriptions, tfidf_transformer
     )
-    predictions = forest.predict(transformed_descriptions)
+    predictions = clf.predict(transformed_descriptions)
     # predictions = gnb.predict(transformed_descriptions)
     saveData(descriptions, urls, predictions)
 
