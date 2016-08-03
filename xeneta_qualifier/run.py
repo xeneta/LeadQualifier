@@ -1,7 +1,7 @@
 import csv
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import SGDClassifier
-from sklearn.metrics import roc_auc_score, precision_recall_fscore_support
+from sklearn.metrics import precision_recall_fscore_support
 import numpy as np
 
 def convertToFloat(lst):
