@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.cross_validation import train_test_split
+from sklearn.metrics import precision_recall_fscore_support
 # from sklearn.naive_bayes import GaussianNB
 
 from sklearn import neighbors
@@ -25,10 +26,9 @@ def getSheet(name):
     return sheet
 
 
-def cleanUp(descriptions, disc=False):
+def cleanUp(descriptions):
     clean_descriptions = []
     index = 0
-
     for desc in descriptions:
         desc = re.sub("[^a-zA-Z]", " ", desc)
         stemmed_desc = []
@@ -50,42 +50,29 @@ def getDescriptionsFromSheet(sheet):
         descriptions.append(description)
     return descriptions
 
+def getScores(clf, X, y):
+    predictions = clf.predict(X)
+    scores = precision_recall_fscore_support(y, predictions, average='binary')
+    return scores
 
-def transformByTfIdf(X_train, X_test, transformer):
-    X_train = transformer.transform(X_train).toarray()
-    X_test = transformer.transform(X_test).toarray()
-    return X_train, X_test
+def transform(data, transformer):
+    return transformer.transform(data).toarray()
 
+def runForest(X_train, y_train):
+    forest = RandomForestClassifier(n_estimators=90, random_state=42)
+    forest.fit(X_train, y_train)
+    return forest
 
-def transformByVectorizer(X_train, X_test, vectorizer):
-    X_train = vectorizer.transform(X_train).toarray()
-    X_test = vectorizer.transform(X_test).toarray()
-    return X_train, X_test
-
-
-def vectorize(descriptions):
-    vectorized_descriptions = vectorizer.fit_transform(descriptions)
-    return vectorized_descriptions.toarray(), vectorizer
-
-
-def runForest(X_train, X_test, Y_train, Y_test):
-    forest = RandomForestClassifier(n_estimators=50, random_state=1)
-    forest = forest.fit(X_train, Y_train)
-    score = forest.score(X_test, Y_test)
-    return score, forest
-
-# def runGaussianNB(X_train, X_test, Y_train, Y_test):
+# def runGaussianNB(X_train, X_test, y_train, y_test):
 #    clf=GaussianNB()
-#    clf.fit(X_train,Y_train)
-#    score=clf.score(X_test, Y_test)
-#    return clf, score
+#    clf.fit(X_train,y_train)
+#    return clf
 
-def runKNN(X_train, X_test, Y_train, Y_test):
-    knn = neighbors.KNeighborsClassifier()
-    knn.fit(X_train, Y_train)
-    score = knn.score(X_test, Y_test)
-    return score
-
+# def runKNN(X_train, X_test, y_train, y_test):
+#     knn = neighbors.KNeighborsClassifier()
+#     knn.fit(X_train, y_train)
+#     score = knn.score(X_test, y_test)
+#     return score
 
 def createLabelArray(qualified, disqualified):
     labels = []
@@ -95,31 +82,45 @@ def createLabelArray(qualified, disqualified):
         labels.append(0)
     return np.array(labels)
 
+
 qualified_sheet = getSheet('input/qualified.xlsx')
 qualified_descriptions = getDescriptionsFromSheet(qualified_sheet)
 qualified_clean_descriptions = cleanUp(qualified_descriptions)
 disqualified_sheet = getSheet('input/disqualified.xlsx')
 disqualified_descriptions = getDescriptionsFromSheet(disqualified_sheet)
-disqualified_clean_descriptions = cleanUp(disqualified_descriptions, True)
+disqualified_clean_descriptions = cleanUp(disqualified_descriptions)
 
 X = qualified_clean_descriptions + disqualified_clean_descriptions
-Y = createLabelArray(
+y = createLabelArray(
     qualified_clean_descriptions, disqualified_clean_descriptions
 )
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X, Y, test_size=0.3, random_state=42
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42
 )
+
+# Fit the vectorizer on the training data
 vectorizer.fit(X_train)
-X_train, X_test = transformByVectorizer(X_train, X_test, vectorizer)
+
+# Vectorize all the data
+X_train = transform(X_train, vectorizer)
+X_test = transform(X_test, vectorizer)
+
+# Fit the tfidf transformer on the vectorized training data
 tfidf_transformer.fit(X_train)
-X_train, X_test = transformByTfIdf(X_train, X_test, tfidf_transformer)
 
-# gnb, gnb_score=runGaussianNB(X_train, X_test, Y_train, Y_test)
-forest_score, forest = runForest(X_train, X_test, Y_train, Y_test)
+# Tfidf transform all the data
+X_train = transform(X_train, tfidf_transformer)
+X_test = transform(X_test, tfidf_transformer)
 
-print 'Random Forest score: ', forest_score
+# gnb, gnb_score=runGaussianNB(X_train, X_test, y_train, y_test)
+
+forest = runForest(X_train, y_train)
+forest_scores = getScores(forest, X_test, y_test)
+print 'Random Forest scores: ', forest_scores
+
 # print 'Random Gaussian Naive Bayes score: ', gnb_score
 
+# Dump the algoruthms
 with open('../qualify_leads/algorithms/forest', 'wb') as f:
     cPickle.dump(forest, f)
 

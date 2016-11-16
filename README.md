@@ -4,7 +4,7 @@ This repo is a collection of scripts we use at Xeneta to **qualify sales leads**
 
 You can use this repo for **two things:**
 
-1. Use **our data** to experiment with your own algorithms
+1. Try to beat our predictions using **our data** and your own algorithm
 2. Create a lead qualifier for your company, using **your own data**
 
 ## Setup
@@ -43,7 +43,9 @@ Thanks to [lampts](https://github.com/lampts) for implementing the best performi
 
 # 2. Create your own lead qualifier
 
-To create your own lead qualifier, you'll need to get hold of company descriptions (to create your dataset). We currently use [FullContact](https://www.fullcontact.com/developer) for this. 
+To create your own lead qualifier, you'll need to get hold of company descriptions (to create your dataset). We currently use [FullContact](https://www.fullcontact.com/developer) for this.  
+
+**Note:** We've added dummy data, so that you can run both scripts without getting errors, and to give you examples on how the sheets should look like.
 
 ## [Train Algorithm](https://github.com/xeneta/LeadQualifier/tree/master/train_algorithm)
 

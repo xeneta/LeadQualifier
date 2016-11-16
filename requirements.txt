@@ -4,3 +4,4 @@ sklearn
 xlrd
 xlwt
 csv
+pandas
