@@ -40,6 +40,8 @@ Thanks to [lampts](https://github.com/lampts) for implementing the best performi
 | Random Forest | 0.845         | 0.915  | 0.878   |
 
 
+**PS:** We're also experimenting with a neural net (in TensorFlow) in the nn.py file.
+
 
 # 2. Create your own lead qualifier
 

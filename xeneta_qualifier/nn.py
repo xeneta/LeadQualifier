@@ -2,7 +2,15 @@ import tensorflow as tf
 import csv
 import numpy as np
 from random import randrange
-SEED = 1
+
+# This net is not working, as it predicts all 0's or all 1's at the moment.
+
+# variables for the net
+SEED = 3
+FIRST_HIDDEN = 500
+SECOND_HIDDEN = 50
+FINAL_LAYER = 2
+BATCH_SIZE = 100
 
 def convertToFloat(lst):
     return np.array(lst).astype(np.float)
@@ -35,21 +43,9 @@ def bias_variable(shape):
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial)
 
-# fetch the training and testing data
-X_test, y_test = fetchData('data/test.csv')
-X_train, y_train = fetchData('data/train.csv')
-y_test = convertToOneHot(y_test)
-y_train = convertToOneHot(y_train)
-
-print 'len(X_train): ', len(X_train)
-print 'len(X_test): ', len(X_test)
-
-FIRST_HIDDEN = 2000
-SECOND_HIDDEN = 500
-THIRD_HIDDEN = 50
 # create variables and placeholders for tensorflows computational graph
 x = tf.placeholder(tf.float32, shape=[None, 5000])
-y_ = tf.placeholder(tf.float32, shape=[None, 2])
+y_ = tf.placeholder(tf.float32, shape=[None, FINAL_LAYER])
 
 W_1 = weight_variable([5000, FIRST_HIDDEN])
 b_1 = bias_variable([FIRST_HIDDEN])
@@ -57,73 +53,61 @@ b_1 = bias_variable([FIRST_HIDDEN])
 W_2 = weight_variable([FIRST_HIDDEN, SECOND_HIDDEN])
 b_2 = bias_variable([SECOND_HIDDEN])
 
-W_3 = weight_variable([SECOND_HIDDEN, THIRD_HIDDEN])
-b_3 = bias_variable([THIRD_HIDDEN])
+W_3 = weight_variable([SECOND_HIDDEN, FINAL_LAYER])
+b_3 = bias_variable([FINAL_LAYER])
 
-W_4 = weight_variable([THIRD_HIDDEN, 2])
-b_4 = bias_variable([2])
+hidden_layer_1 = tf.nn.sigmoid(tf.matmul(x, W_1) + b_1)
+hidden_layer_2 = tf.nn.sigmoid(tf.matmul(hidden_layer_1, W_2) + b_2)
+y =  tf.nn.softmax(tf.matmul(hidden_layer_2, W_3) + b_3)
 
-hidden_layer = tf.nn.sigmoid(tf.matmul(x, W_1) + b_1)
-hidden_layer_2 = tf.nn.sigmoid(tf.matmul(hidden_layer, W_2) + b_2)
-hidden_layer_3 = tf.nn.sigmoid(tf.matmul(hidden_layer_2, W_3) + b_3)
 
-#y = tf.nn.softmax(tf.matmul(hidden_layer, W_2) + b_2)
-y = tf.matmul(hidden_layer_3, W_4) + b_4
+# Manually calculating the loss
+#cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
 
+# Automatically calculating the loss
+cross_entropy = tf.reduce_mean(
+     tf.nn.softmax_cross_entropy_with_logits(y, y_)
+)
+
+# possible other loss function, if not one hot vector
+#loss = tf.reduce_mean(tf.abs(tf.sub(y_, y)))
+
+train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
 # we need to initialize all variables
-
 init = tf.initialize_all_variables()
 sess = tf.Session()
 sess.run(init)
 
-
-# define loss function and optimizer (gradient descent)
-log_y = tf.log(y)
-log_calc = y_ * log_y
-cross = -tf.reduce_sum(log_calc, reduction_indices=[1])
-#cross_entropy = tf.reduce_mean(cross)
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(y, y_)
-cross_mean = tf.reduce_mean(cross_entropy)
-
-train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy)
-
-batch_size = 50
+# fetch the training and testing data
+X_test, y_test = fetchData('data/test.csv')
+X_train, y_train = fetchData('data/train.csv')
+y_test = convertToOneHot(y_test)
+y_train = convertToOneHot(y_train)
 
 
 # loop through the data to run the regression and update the weights
-for i in range(500):
-    r = randrange(0, 1530)
+for i in range(1000):
+    r = randrange(0, 1447)
     start = r
-    stop = r + batch_size
+    stop = r + BATCH_SIZE
     x_train_batch = X_train[start: stop]
     y_train_batch = y_train[start: stop]
-    _, _cross_entropy, _cross, _log_calc, _log_y, _y = sess.run([train_step, cross_entropy, cross, log_calc, log_y, y], feed_dict={
+    sess.run(train_step, feed_dict={
         x: x_train_batch,
         y_: y_train_batch
     })
-    #print '_cross_entropy = %s' % _cross_entropy
-    #print '_cross = %s' % _cross
-    #print '_y_ = %s' % _y_
-    #print '_y = %s' % _y
-
 
     if i % 100 == 0:
-        current_loss, _cross_mean = sess.run([cross_entropy, cross_mean], feed_dict={
+        cross_entropy_out = sess.run([cross_entropy], feed_dict={
             x: X_test,
             y_: y_test
         })
+        print 'cross_entropy_out:', cross_entropy_out
 
-        #print 'current_loss: ', current_loss
-        print '_cross_mean', _cross_mean
-        #print 'current_b: ',current_b
-        #print '----------'
-
-# evaluate the model
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-print(accuracy.eval(session=sess,feed_dict={x: X_test, y_: y_test}))
+print 'accuracy: ', sess.run(accuracy, feed_dict={x: X_test, y_: y_test})
 
 
 
