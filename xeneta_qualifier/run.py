@@ -26,7 +26,7 @@ def runForest(X_train, y_train):
 
 # Stochastic Gradient Descent Classifier
 def runSGD(X_train, y_train):
-    sgd = SGDClassifier(n_iter=500, loss='modified_huber', penalty='elasticnet', random_state=42)
+    sgd = SGDClassifier(max_iter=500, loss='modified_huber', penalty='elasticnet', random_state=42)
     sgd.fit(X_train, y_train)
     return sgd
  
